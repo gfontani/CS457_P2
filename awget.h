@@ -3,8 +3,6 @@
 //Dr. Indrajit Ray
 //10/27/2016
 
-
-
 int main(int argc, char* argv[]){
 
 }
