@@ -92,6 +92,7 @@ void server_setup(){
 	if (newsockfd < 0) error("ERROR on accept");
 
 	printf("Found a friend! Receiving chain-list first...\n");
+	//TODO
 	//get chain-list from prev client
 	//if chain is not empty, connect to next SS and wait for file
 	//else wget URL file
