@@ -1,0 +1,8 @@
+Awget.h   ----------------------------------awget.cpp
+-struct for chain     -                     -read chainFile
+-struct/for file?       -                     -put into list of some sort.
+-send/recieve             -                  -argument checking
+-recieve file                - 
+                                - SS.cpp
+                                 -wget filed
+                                 -usage
