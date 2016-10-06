@@ -3,21 +3,8 @@
 //Dr. Indrajit Ray
 //10/27/2016
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <signal.h>
-#include <arpa/inet.h>
-
-int sockfd;
-int newsockfd;
-int is_server;
-int portno;
+#include <awget.h>
+#include <common.h>
 
 //print address of server
 void printAddr(char const* port){
@@ -30,35 +17,9 @@ void printAddr(char const* port){
 	printf("Waiting for a connection on %s ", ip);
 }
 
-//signal handler for SIGINT
-void sig_handler(int signo){
-	if (signo == SIGINT){
-		printf("\nreceived SIGINT, exiting gracefully\n");
-		close(newsockfd);
-		close(sockfd);
-		exit(0);
-	}
-	else{
-		printf("\nunhandled signo, attempting to exit gracefully\n");
-		close(newsockfd);
-		close(sockfd);
-		exit(-1);
-	}
-}
-
-//print error message
-void error(const char *msg)
-{
-	perror(msg);
-	close(newsockfd);
-	close(sockfd);
-	exit(1);
-}
-
 //server setup
-void server_setup(){
+int server_setup(int portno){
 	char const * port_number = "3360"; //starting port
-	portno = 3360;
 
 	socklen_t clilen;
 	struct sockaddr_in serv_addr, cli_addr;
@@ -91,11 +52,19 @@ void server_setup(){
                  &clilen);
 	if (newsockfd < 0) error("ERROR on accept");
 
-	printf("Found a friend! Receiving chain-list first...\n");
-	//get chain-list from prev client
-	//if chain is not empty, connect to next SS and wait for file
-	//else wget URL file
-	//return file to prev client
+	printf("Found a friend! Waiting to receive...\n");
+	return newsockfd;
+}
+
+//get port number from args
+int getPort(int argc, char *argv[]){
+	for(int i=0; i<argc-1; i++){
+		if(strcmp(argv[i],"-p")==0){
+			check_range(argv[i+1], 1024, 65535);
+			return atoi(argv[i+1]);
+		}
+	}
+	return -1;
 }
 
 int main(int argc, char* argv[])
@@ -104,15 +73,19 @@ int main(int argc, char* argv[])
 		printf("\ncan't catch SIGINT\n");
 		exit(1);
 	}
+	
+	printf("****SS****\n");
 
 	if (argc == 1) {
-		is_server = 1;
-		printf("****SS****\n");
-		server_setup();
+		server_setup(3360);
+	}
+	else if(argc == 3){
+		int portno = getPort(argc, argv);
+		server_setup(portno);
 	}
 	else{
 		printf("*help*\n");
-		printf("leave arguments blank for stepping-stone. Use ^c to exit.\n");
+		printf("leave arguments blank or use -p [portno] for stepping-stone to listen on. Use ^c to exit.\n");
 		printf("Exiting help.\n");
 		exit(0);
 	}
