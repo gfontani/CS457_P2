@@ -88,7 +88,7 @@ void error(char const * msg)
 
 //client setup
 //args: addr and port to connect to 
-int client_setup(char* addr, int portno){
+int client_connect(char* addr, int portno){
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 
@@ -112,4 +112,13 @@ int client_setup(char* addr, int portno){
 	printf("Connected!\n");
 	printf("Connected to a friend! Sending...\n");
 	return sockfd;
+}
+
+void send_msg(int sock){
+	
+	
+}
+
+void recv_msg(int sock){
+	
 }

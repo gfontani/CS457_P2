@@ -18,7 +18,7 @@ void printAddr(char const* port){
 }
 
 //server setup
-int server_setup(int portno){
+int server_accept_listen(int portno){
 	char const * port_number = "3360"; //starting port
 
 	socklen_t clilen;
@@ -77,11 +77,11 @@ int main(int argc, char* argv[])
 	printf("****SS****\n");
 
 	if (argc == 1) {
-		server_setup(3360);
+		server_accept_listen(3360);
 	}
 	else if(argc == 3){
 		int portno = getPort(argc, argv);
-		server_setup(portno);
+		server_accept_listen(portno);
 	}
 	else{
 		printf("*help*\n");

@@ -27,7 +27,7 @@ void check_range(char* value, int min, int max);
 void check_address(char* address);
 void sig_handler(int signo);
 void error(char const * msg);
-int client_setup();
+int client_connect();
 void send_msg(int sock);
 void recv_msg(int sock);
 
