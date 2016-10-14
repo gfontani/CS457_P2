@@ -6,3 +6,10 @@ Awget.h   ----------------------------------awget.cpp
                                 - SS.cpp
                                  -wget filed
                                  -usage
+
+
+Things to do:
+make sure to call check address when reading the ip file to make sure you have valid IP's.
+(what to do if we find a bad one?  cnx?  exit?  go to next one?).
+Gabby is going to write all of the code starting with send and recieve.
+Where do our stucts need to go?  Is it ok if we took the struct out of awget.
