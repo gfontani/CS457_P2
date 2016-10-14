@@ -16,6 +16,7 @@
 #include <netdb.h>
 #include <signal.h>
 #include <arpa/inet.h>
+#include <time.h>       /* time for seeding rand*/
 
 //global variables
 extern int sockfd;
@@ -30,5 +31,6 @@ void error(char const * msg);
 int client_connect();
 void send_msg(int sock);
 void recv_msg(int sock);
+int random_int(int max);
 
 #endif

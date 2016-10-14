@@ -5,9 +5,19 @@
 
 #include <common.h>
 
+
 //global variables
 int sockfd;
 int newsockfd;
+
+
+//returns a random number between (inclusive) 0 and max
+int random_int(int max){
+	srand (time(NULL));
+	int random_value = rand() % (max+1);
+	printf("random value chosen: %d", random_value);
+	return random_value;
+}
 
 //sanity chex
 void check_number(char* str){
