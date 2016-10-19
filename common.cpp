@@ -5,11 +5,9 @@
 
 #include <common.h>
 
-
 //global variables
 int sockfd;
 int newsockfd;
-
 
 //returns a random number between (inclusive) 0 and max
 int random_int(int max){
@@ -124,11 +122,22 @@ int client_connect(char* addr, int portno){
 	return sockfd;
 }
 
-void send_msg(int sock){
-	
-	
+void send_msg(int sock, packet* to_send){
+		int n;
+		n = send(sock,reinterpret_cast<const char*>(to_send),sizeof(packet), 0);
+			if (n < 0) error("ERROR writing to socket");
 }
 
-void recv_msg(int sock){
-	
+void recv_msg(int sock, packet* recvd){
+	int n = recv(sock,reinterpret_cast<char*>(recvd),sizeof(packet), 0);
+	if (n < 0) error("ERROR reading from socket");
+
+	/*short* header = (short*)buffer;
+	char* begin = buffer;
+	recvd.size1 = header[0];
+	cout << recvd.size1 << endl;
+	recvd.size2 = header[1];
+	cout << recvd.size1 << endl;
+	recvd.data = begin+4;
+	*/
 }

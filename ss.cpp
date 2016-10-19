@@ -89,5 +89,13 @@ int main(int argc, char* argv[])
 		printf("Exiting help.\n");
 		exit(0);
 	}
+	
+	packet to_recv;
+	recv_msg(newsockfd, &to_recv);
+	cout << "size1: " << to_recv.size1 << endl;
+	cout << "size2: " << to_recv.size2 << endl;
+	printf("data: %s",to_recv.data);
+	printf("data2: %s", to_recv.data + to_recv.size1);
+
 	return 0;
 }

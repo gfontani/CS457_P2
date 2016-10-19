@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
 
 	printf("****awget****\n");
 	
-	if (argc == 2) {
+/*	if (argc == 2) {
 		//URL is first argument with no flag
 		printf("no chain file requested, will attempt to read chaingang.txt.\n");
 		//TODO
@@ -32,12 +32,28 @@ int main(int argc, char* argv[]){
 		printf("Exiting help.\n");
 		exit(0);
 	}
+	*/
 	
 	//TODO
-	//sockfd = client_setup(chain_address, chain_portno);
+	//TODO change this!!!
+	
+	int portno;
+	stringstream str(argv[1]);
+	str >> portno;
+	char* addr = argv[2];
+	sockfd = client_connect(addr, portno);
+	packet test;
+	test.size1 = 2;
+	test.size2 = 100;
+	const char* hello = "hello world\n";
+	//NOTE: the + 1 is necessary to avoid strange characters
+	memcpy(test.data, hello, strlen(hello) + 1);
+	send_msg(sockfd, &test);
 	//send chain-gang to next ss
 	//wait to receive file
 	
 	close(sockfd);
+
+
 	return 0;
 }
