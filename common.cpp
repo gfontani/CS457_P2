@@ -157,18 +157,3 @@ void recv_msg(int sock, packet* recvd){
 	recvd.data = begin+4;
 	*/
 }
-
-void file_recv(int sock, const char* filename){
-	packet recvd;
-	recv_msg(sock, &recvd);
-	//TODO create file using individual chunks???
-	int total_chunks = recvd.size2;
-	printf("total incoming chunks: %d\n", recvd.size2);
-	printf("chunck_no: %d\n", recvd.size1);
-	for(int i=1; i<total_chunks; i++){
-		recv_msg(sock, &recvd);
-		//TODO create file using individual chunks???
-		printf("chunck_no: %d\n", recvd.size1);		
-	}
-}
-

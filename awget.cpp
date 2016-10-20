@@ -6,6 +6,20 @@
 #include <awget.h>
 #include <common.h>
 
+void file_recv(int sock, FILE* file){
+	packet recvd;
+	recv_msg(sock, &recvd);
+	//TODO create file using individual chunks
+	int total_chunks = recvd.size2;
+	printf("total incoming chunks: %d\n", recvd.size2);
+	printf("chunck_no: %d\n", recvd.size1);
+	for(int i=1; i<total_chunks; i++){
+		recv_msg(sock, &recvd);
+		//TODO create file using individual chunks
+		printf("chunck_no: %d\n", recvd.size1);		
+	}
+}
+
 int main(int argc, char* argv[]){
 	if (signal(SIGINT, sig_handler) == SIG_ERR){
 		printf("\ncan't catch SIGINT\n");
@@ -52,8 +66,11 @@ int main(int argc, char* argv[]){
 	//send chain-gang to next ss
 	//wait to receive file
 
+	FILE* fileptr;
+	fileptr = fopen("newfile", "wb"); //create file "newfile" with mode write in bytes
+
 	printf("file_recv...\n");
-	file_recv(sockfd, "newfilename");
+	file_recv(sockfd, fileptr);
 	printf("file_recv finished.\n");
 	
 	close(sockfd);

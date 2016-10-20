@@ -6,11 +6,18 @@
 #include <awget.h>
 #include <common.h>
 
-//file chunk to packet
-void file_to_packet(FILE* fileptr, packet* to_send, long filelen){
-	
-	for(int i=0; i < MAX_CHUNK_SIZE; i++) {
-
+//forward file packets from sock1 to sock2 without actually saving file to SS
+void file_forward(int sock1, int sock2){
+	packet to_forward;
+	recv_msg(sock1, &to_forward);
+	int total_chunks = to_forward.size2;
+	printf("total incoming chunks: %d\n", total_chunks);
+	printf("forwarding chunck_no: %d...\n", to_forward.size1);
+	send_msg(sock2, &to_forward);
+	for(int i=1; i<total_chunks; i++){
+		recv_msg(sock1, &to_forward);
+		printf("forwarding chunck_no: %d...\n", to_forward.size1);
+		send_msg(sock2, &to_forward);
 	}
 }
 
@@ -40,8 +47,8 @@ void file_send(const char* filename, int sockfd){
 		}
 		//last partial chunk
 		else if(remaining < MAX_CHUNK_SIZE && remaining > 0){
-			fread(to_send.data, 1, (int)remaining, fileptr);
-			bzero((char *) &(to_send.data[(int)remaining]), MAX_CHUNK_SIZE-remaining); //fill remainder of packet buffer with zeros
+			bzero((char *) to_send.data, MAX_CHUNK_SIZE); //fill packet data with zeros since chunk will not fill entire packet
+			fread(to_send.data, 1, (int)remaining, fileptr); //fill first part of packet data with remaining chunk
 		}
 		send_msg(sockfd, &to_send);
 	}
