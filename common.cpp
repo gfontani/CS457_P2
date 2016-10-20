@@ -9,6 +9,23 @@
 int sockfd;
 int newsockfd;
 
+//get the filename from the URL
+char* get_filename(char* URL){
+	int index = -1;
+	char c;
+	for(int i=0; i<(int)strlen(URL); i++){
+		c = URL[i];
+		if(c=='/'){
+			index = i; 
+		}	
+	}
+	if(index > -1 && index<(int)strlen(URL)-1){
+		printf("filename Index: %d", URL[index+1]);
+		return 	&URL[index+1];
+	}
+	else return NULL;
+}
+
 //returns a random number between (inclusive) 0 and max
 int random_int(int max){
 	srand (time(NULL));

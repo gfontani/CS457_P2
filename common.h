@@ -42,5 +42,6 @@ int client_connect(char* addr, int portno);
 void send_msg(int sock, packet* to_send);
 void recv_msg(int sock, packet* to_recv);
 int random_int(int max);
+char* get_filename(char* URL);
 
 #endif

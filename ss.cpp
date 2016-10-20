@@ -6,6 +6,18 @@
 #include <awget.h>
 #include <common.h>
 
+//wget file: returns a pointer to the first byte of the file
+void wget_url(const char* URL){
+	int n;
+	const char* command = "wget ";
+	char str[strlen(command) + strlen(URL)];
+ 	strcpy(str, command);
+	strcat(str, URL);
+	n = system(str); //downloads file to working directory
+	if(n<0)
+		error("ERROR using wget");
+}
+
 //print address of server
 void printAddr(char const* port){
 	char hostname[100];
@@ -96,6 +108,8 @@ int main(int argc, char* argv[])
 	cout << "size2: " << to_recv.size2 << endl;
 	printf("data: %s",to_recv.data);
 	printf("data2: %s", to_recv.data + to_recv.size1);
+
+	wget_url("https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png");
 
 	return 0;
 }
