@@ -6,6 +6,47 @@
 #include <awget.h>
 #include <common.h>
 
+//file chunk to packet
+void file_to_packet(FILE* fileptr, packet* to_send, long filelen){
+	
+	for(int i=0; i < MAX_CHUNK_SIZE; i++) {
+
+	}
+}
+
+//send file to socket in chunks
+void file_send(const char* filename, int sockfd){
+	FILE *fileptr;
+	long filelen;
+
+	//get file length
+	fileptr = fopen(filename, "rb");        
+	fseek(fileptr, 0, SEEK_END);          
+	filelen = ftell(fileptr);            
+	rewind(fileptr);
+
+	int total_chunks = filelen/MAX_CHUNK_SIZE + 1;
+	printf("total_packets: %d\n", total_chunks);
+
+	packet to_send;
+	long remaining = filelen;
+	for(int i=0; i<total_chunks; i++){
+		//all complete chunks
+		to_send.size1 = i; //chunk_no
+		to_send.size2 = total_chunks; //total_chunks
+		if(remaining >= MAX_CHUNK_SIZE){
+			fread(to_send.data, 1, MAX_CHUNK_SIZE, fileptr);
+			remaining -= MAX_CHUNK_SIZE;
+		}
+		//last partial chunk
+		else if(remaining < MAX_CHUNK_SIZE && remaining > 0){
+			fread(to_send.data, 1, (int)remaining, fileptr);
+			bzero((char *) &(to_send.data[(int)remaining]), MAX_CHUNK_SIZE-remaining); //fill remainder of packet buffer with zeros
+		}
+		send_msg(sockfd, &to_send);
+	}
+}
+
 //wget file: returns a pointer to the first byte of the file
 void wget_url(const char* URL){
 	int n;
@@ -110,6 +151,9 @@ int main(int argc, char* argv[])
 	printf("data2: %s", to_recv.data + to_recv.size1);
 
 	wget_url("https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png");
+	printf("file_send...\n");
+	file_send("Wget.png", newsockfd);
+	printf("file_send complete.\n");
 
 	return 0;
 }

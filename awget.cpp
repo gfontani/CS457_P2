@@ -51,6 +51,10 @@ int main(int argc, char* argv[]){
 	send_msg(sockfd, &test);
 	//send chain-gang to next ss
 	//wait to receive file
+
+	printf("file_recv...\n");
+	file_recv(sockfd, "newfilename");
+	printf("file_recv finished.\n");
 	
 	close(sockfd);
 

@@ -148,7 +148,6 @@ void send_msg(int sock, packet* to_send){
 void recv_msg(int sock, packet* recvd){
 	int n = recv(sock,reinterpret_cast<char*>(recvd),sizeof(packet), 0);
 	if (n < 0) error("ERROR reading from socket");
-
 	/*short* header = (short*)buffer;
 	char* begin = buffer;
 	recvd.size1 = header[0];
@@ -158,3 +157,18 @@ void recv_msg(int sock, packet* recvd){
 	recvd.data = begin+4;
 	*/
 }
+
+void file_recv(int sock, const char* filename){
+	packet recvd;
+	recv_msg(sock, &recvd);
+	//TODO create file using individual chunks???
+	int total_chunks = recvd.size2;
+	printf("total incoming chunks: %d\n", recvd.size2);
+	printf("chunck_no: %d\n", recvd.size1);
+	for(int i=1; i<total_chunks; i++){
+		recv_msg(sock, &recvd);
+		//TODO create file using individual chunks???
+		printf("chunck_no: %d\n", recvd.size1);		
+	}
+}
+
