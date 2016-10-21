@@ -43,5 +43,6 @@ void send_msg(int sock, packet* to_send);
 void recv_msg(int sock, packet* to_recv);
 int random_int(int max);
 char* get_filename(char* URL);
+int pick_ip(int num_ips, char* chain_list, char* newList, char* ip);
 
 #endif

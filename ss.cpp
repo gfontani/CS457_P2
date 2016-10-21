@@ -161,6 +161,16 @@ int main(int argc, char* argv[])
 	printf("file_send...\n");
 	file_send("Wget.png", newsockfd);
 	printf("file_send complete.\n");
-
+	
+	/*
+	 * This was Gabby testing the random ip getter.  leaving it here in case we want it!
+	char test[] = "1.2.3.4,1111,2.3.4.5,2222,3.4.5.6,3333,4.5.6.7,4444,5.6.7.8,5555";
+	int ipSize = 15;
+	char ip[ipSize];
+	char newList[MAX_CHUNK_SIZE];
+	printf("made all the variables\n");
+	int port = pick_ip(5, test, newList, ip);
+	printf("port: %d \n ip: %s \n newList: %s \n", port, ip, newList);
+	*/
 	return 0;
 }

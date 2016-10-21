@@ -34,6 +34,62 @@ int random_int(int max){
 	return random_value;
 }
 
+
+//picks a random IP from the chain file and removes the ip and 
+//port from the list
+//num_ips is the number of ip addresses left in the list
+//chain_list is the list of ips and ports received from the packet
+//ip is a reference to the next ip address.  It will be filled in
+//newList is a reference to the updated ip list. it will be filled in
+//returns: the chosen port
+//
+//NOTE: this function assumes that the list is in the correct format
+int pick_ip(int num_ips, char* chain_list, char* newList, char* ip){
+	int port = -1;
+	//pick a random number
+	int chosen_ip = random_int(num_ips -1);
+	printf("random int: %d\n", chosen_ip);
+	
+	//split all of the IPs
+	//get the chosen ip and port
+	//put the rest in the newList
+	int counter = 0;
+	char* split = strtok(chain_list, ",");
+				//printf("split: %s\n", split);
+
+	while(split != NULL){
+		if(chosen_ip == counter){
+			strcpy(ip, split);
+			split = strtok(NULL, ","); 
+			port = atoi(split);
+			split = strtok(NULL, ",");
+		}
+		else{
+			if((0 == counter && 0 != chosen_ip) || (1 == counter && 0 == chosen_ip)){
+				//add ip
+				strcpy(newList, split);
+				strcat(newList, ",");
+				split = strtok(NULL, ","); 
+				//add port to list
+				strcat(newList, split);
+				split = strtok(NULL, ",");
+			}
+			else{
+				strcat(newList, ",");
+				//add ip to list followed by a comma
+				strcat(newList, split);
+				strcat(newList, ",");
+				split = strtok(NULL, ","); 
+				//add port to list
+				strcat(newList, split);
+				split = strtok(NULL, ",");
+			}
+		}
+		counter++;
+	}
+	return port;
+}
+
 //sanity chex
 void check_number(char* str){
 	char c;
