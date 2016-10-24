@@ -6,6 +6,20 @@
 #include <awget.h>
 #include <common.h>
 
+//gets the url from the packet data
+char* get_url_from_packet(packet* parsePacket){
+	char* url = new char[parsePacket->size1 + 1];
+	strncpy(url, parsePacket->data, parsePacket->size1);
+	return url;
+}
+
+//gets the chainlist from the packet data
+char* get_chainList_from_packet(packet* parsePacket){
+	char* chain_list = new char[MAX_CHUNK_SIZE - parsePacket->size1];
+	strncpy(chain_list, parsePacket->data + parsePacket->size1, MAX_CHUNK_SIZE - parsePacket->size1);
+	return chain_list;
+}
+
 //forward file packets from sock1 to sock2 without actually saving file to SS
 void file_forward(int sock1, int sock2){
 	packet to_forward;
@@ -135,13 +149,14 @@ int main(int argc, char* argv[])
 	}
 	
 	printf("****SS****\n");
-
+	
+//check arguments
+	int portno = 0;
 	if (argc == 1) {
-		server_accept_listen(3360);
+		portno = 3360;
 	}
 	else if(argc == 3){
-		int portno = getPort(argc, argv);
-		server_accept_listen(portno);
+		portno = getPort(argc, argv);
 	}
 	else{
 		printf("*help*\n");
@@ -149,6 +164,56 @@ int main(int argc, char* argv[])
 		printf("Exiting help.\n");
 		exit(0);
 	}
+	
+	//loop?
+	while(true){
+		//listen for connections
+		server_accept_listen(portno);
+		
+		//recv chainfile packet
+		packet to_recv;
+		recv_msg(newsockfd, &to_recv);
+		cout << "size1: " << to_recv.size1 << endl;
+		cout << "size2: " << to_recv.size2 << endl;
+		printf("data: %s",to_recv.data);
+		printf("data2: %s", to_recv.data + to_recv.size1);
+		char* url = get_url_from_packet(&to_recv);
+
+		//if chainlist empty 
+		if(0 == to_recv.size2){
+			//get and send file
+			wget_url(url);
+			printf("file_send...\n");
+			//Do we need to get the file name??
+			char* filename = get_filename(url);
+			file_send(filename, newsockfd);
+			printf("file_send complete.\n");
+		}
+		else{
+			//make new chainfile packet
+			packet to_send;
+			to_send.size1 = to_recv.size1;
+			to_send.size2 = to_recv.size2 - 1;
+			memcpy(to_send.data, url, strlen(url) + 1);
+			
+			char* chain_list = get_chainList_from_packet(&to_recv);
+			char newList[MAX_CHUNK_SIZE - to_send.size1];
+			int ipSize = 15;
+			char ip[ipSize];
+			int port = pick_ip(5, chain_list, newList, ip);
+			
+			strcat(to_send.data, newList);
+		
+			//send new chainfile packet
+			
+			//listen for and receive file cunks and send to previous ss
+			
+		}
+		//teardown connection
+	
+	}
+	//end loop?
+	
 	
 	packet to_recv;
 	recv_msg(newsockfd, &to_recv);
