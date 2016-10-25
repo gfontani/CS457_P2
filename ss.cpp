@@ -26,11 +26,11 @@ void file_forward(int sock1, int sock2){
 	recv_msg(sock1, &to_forward);
 	int total_chunks = to_forward.size2;
 	printf("total incoming chunks: %d\n", total_chunks);
-	printf("forwarding chunck_no: %d...\n", to_forward.size1);
+	printf("chunk_no: 1, size: %d...\n", to_forward.size1);
 	send_msg(sock2, &to_forward);
 	for(int i=1; i<total_chunks; i++){
 		recv_msg(sock1, &to_forward);
-		printf("forwarding chunck_no: %d...\n", to_forward.size1);
+		printf("chunk_no: %d, size: %d...\n", i, to_forward.size1);
 		send_msg(sock2, &to_forward);
 	}
 }
@@ -53,14 +53,15 @@ void file_send(const char* filename, int sockfd){
 	long remaining = filelen;
 	for(int i=0; i<total_chunks; i++){
 		//all complete chunks
-		to_send.size1 = i; //chunk_no
 		to_send.size2 = total_chunks; //total_chunks
 		if(remaining >= MAX_CHUNK_SIZE){
+			to_send.size1 = MAX_CHUNK_SIZE; //chunk_size
 			fread(to_send.data, 1, MAX_CHUNK_SIZE, fileptr);
 			remaining -= MAX_CHUNK_SIZE;
 		}
 		//last partial chunk
 		else if(remaining < MAX_CHUNK_SIZE && remaining > 0){
+			to_send.size1 = (int)remaining; //chunk_size
 			bzero((char *) to_send.data, MAX_CHUNK_SIZE); //fill packet data with zeros since chunk will not fill entire packet
 			fread(to_send.data, 1, (int)remaining, fileptr); //fill first part of packet data with remaining chunk
 		}
@@ -165,6 +166,8 @@ int main(int argc, char* argv[])
 		exit(0);
 	}
 	
+	server_accept_listen(portno);//comment out when commenting gabby's code back in
+/*
 	//loop?
 	while(true){
 		//listen for connections
@@ -213,6 +216,7 @@ int main(int argc, char* argv[])
 	
 	}
 	//end loop?
+*/
 	
 	
 	packet to_recv;
