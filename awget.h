@@ -11,7 +11,7 @@
 //packet structure for url+chain packet
 //example: url_len=14,chain_sz=3 data="www.google.com" data2="123.21.1,3600,123.45.2,3601,123.67.3,3602"
 typedef struct{
-	short size1; //URL length or chunk_no
+	short size1; //URL length or chunk_size
 	short size2; //either chain length or total_chunks
 	char data[MAX_CHUNK_SIZE]; //URL followed by chainlist or chunk	
 } packet;

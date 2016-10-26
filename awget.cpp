@@ -6,14 +6,33 @@
 #include <awget.h>
 #include <common.h>
 
-void readAfile(string url, string fileName){
+#include <stdio.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<cstdlib>
+#include<strings.h>
+#include<sstream>
+#include<string.h>
+#include<arpa/inet.h>
+#include<unistd.h>
+#include<iostream>
+#include<arpa/inet.h>
+#include<signal.h>
+#include<csignal>
+#include<fstream> //inclde for talking to files.
+
+using namespace std;
+
+void read_chainfile(string url, string fileName, packet* to_send){
   int i = 0;
   int j = 0;
   string line = "";
   ifstream myfile (fileName); //tries to open the file
   //**load url into struct**//
   for(unsigned int i = 0; i < url.size(); i++){
-  data[j] = url.at(i); //loads url into packet
+  to_send->data[j] = url.at(i); //loads url into packet
   j++;
   }
   
@@ -21,35 +40,37 @@ void readAfile(string url, string fileName){
   if(myfile.is_open()) //checks to see if file exists and can be opened.
   { getline(myfile,line); //grabs first line, number of ss
     stringstream convert(line);
-    convert>>size2; //convert string to short int.
-    cout<<"size2 " << size2<<endl;
+	short chain_len = -1;
+    convert>>chain_len; //convert string to short int.
+    cout<<"size2 " << chain_len<<endl;
+    to_send->size2 = chain_len;
     while(getline (myfile,line) ){
       cout<< line<< '\n'; //prints out file contents... 
       /*need to print out chainFile and next ip at each step
        * probably need to do this from the struct
        */
       for(unsigned int i = 0; i < line.size(); i++){
-        data[j] = line.at(i);
-        if(data[j] == ' '){
-          data[j] = ',';
+        to_send->data[j] = line.at(i);
+        if(to_send->data[j] == ' '){
+          to_send->data[j] = ',';
         }
         j++;
       }
-      data[j] = ',';
+      to_send->data[j] = ',';
       j++;
     }
     //set last index to whatever terminator you want.
-    data[j-1] = 0;
+    to_send->data[j-1] = '\0';
     myfile.close();
     cout<<"now for the array\n";
     
     /*prints out data[]*/
-    while(data[i] != 0)//this only works if the array is calloced.
+    while(to_send->data[i] != '\0')//this only works if the array is calloced.
     {
-      cout<<data[i]; 
+      cout<<to_send->data[i]; 
       i++;
     }
-    cout<<'\n';//new line at the end of array printout.
+    cout<<"finished printing\n";//new line at the end of array printout.
   }
   else {
     cout<<"unalble to open file"<<'\n';
@@ -78,6 +99,12 @@ int main(int argc, char* argv[]){
 	}
 
 	printf("****awget****\n");
+	
+	packet to_send;
+	read_chainfile("www.test.com/index.html", "chain.txt", &to_send);
+	
+	printf("data: %s\n", to_send.data);
+	
 	
 /*	if (argc == 2) {
 		//URL is first argument with no flag
