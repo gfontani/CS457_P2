@@ -8,6 +8,7 @@
 
 //forward file packets from sock1 to sock2 without actually saving file to SS
 void file_forward(int sock1, int sock2){
+	printf("Relaying file...\n");
 	packet to_forward;
 	recv_msg(sock1, &to_forward);
 	int total_chunks = to_forward.size2;
@@ -152,126 +153,57 @@ int main(int argc, char* argv[])
 		printf("Exiting help.\n");
 		exit(0);
 	}
-	
-	server_accept_listen(portno);//comment out when commenting gabby's code back in
-
-/*
-	//loop?
 	while(true){
 		//listen for connections
 		server_accept_listen(portno);
 		
 		//recv chainfile packet
-		packet to_recv;
-		recv_msg(newsockfd, &to_recv);
-		cout << "size1: " << to_recv.size1 << endl;
-		cout << "size2: " << to_recv.size2 << endl;
-		printf("data: %s",to_recv.data);
-		printf("data2: %s", to_recv.data + to_recv.size1);
-		char* url = get_url_from_packet(&to_recv);
-
+		packet chain_packet;
+		recv_msg(newsockfd, &chain_packet);
+		cout << "size1: " << chain_packet.size1 << endl;
+		cout << "size2: " << chain_packet.size2 << endl;
+		printf("data: %s",chain_packet.data);
+		printf("data2: %s", chain_packet.data + chain_packet.size1);
+		char* url = get_url_from_packet(&chain_packet);
+		printf("Request: %s\n", url);
 		//if chainlist empty 
-		if(0 == to_recv.size2){
-			//get and send file
-			wget_url(url);
-			printf("file_send...\n");
-			//Do we need to get the file name??
+		if(0 == chain_packet.size2){
 			char* filename = get_filename(url);
+			printf("chainlist is empty\n");
+			//get and send file
+			printf("issueing wget for file <%s>\n", filename);
+			wget_url(url);
+			printf("File received\n");
+			printf("Relaying file...\n");
 			file_send(filename, newsockfd);
 			printf("file_send complete.\n");
+			//delete the file
+			remove(filename);
 		}
 		else{
+			printf("chainlist is: cool stuff");//TODO: replace this with Ben's method
 			//make new chainfile packet
-			packet to_send;
-			to_send.size1 = to_recv.size1;
-			to_send.size2 = to_recv.size2 - 1;
-			memcpy(to_send.data, url, strlen(url) + 1);
+			char ip[20];
+			int port = pick_ip(&chain_packet, ip);
+			printf("next SS is %s, %d\n", ip, port);
 			
-			char* chain_list = get_chainList_from_packet(&to_recv);
-			char newList[MAX_CHUNK_SIZE - to_send.size1];
-			int ipSize = 15;
-			char ip[ipSize];
-			int port = pick_ip(5, chain_list, newList, ip);
+			//make new socket
+			int forwardingSocket = client_connect(ip, port);
 			
-			strcat(to_send.data, newList);
-		
 			//send new chainfile packet
+			send_msg(forwardingSocket, &chain_packet);
 			
-			//listen for and receive file cunks and send to previous ss
+			//forward the file
+			printf("waiting for file...\n");
+			file_forward(forwardingSocket, newsockfd);
+			printf("Finished relaying file. Goodbye!\n");
+			//teardown connection
+			close(forwardingSocket);
 			
 		}
 		//teardown connection
-	
+		close(newsockfd);
 	}
-	//end loop?
-*/
 
-	
-	packet to_recv;
-	recv_msg(newsockfd, &to_recv);
-	cout << "size1: " << to_recv.size1 << endl;
-	cout << "size2: " << to_recv.size2 << endl;
-	printf("data: %s",to_recv.data);
-	printf("data2: %s", to_recv.data + to_recv.size1);
-
-	wget_url("https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png");
-	printf("file_send...\n");
-	file_send("Wget.png", newsockfd);
-	printf("file_send complete.\n");
-
-	
-	//This was Gabby testing the random ip getter.  leaving it here in case we want it!
-	/*int ipSize = 15;
-	char ip[ipSize];
-	
-	char test2[] = "http://www.supercoolurl.com/filename1.2.3.4,1111,2.3.4.5,2222,3.4.5.6,3333,4.5.6.7,4444,5.6.7.8,5555";
-	packet p;
-	p.size1 = 36;
-	p.size2 = 5;
-	memcpy(p.data, test2, MAX_CHUNK_SIZE);
-	printf("packet size1: %d\n", p.size1);
-	printf("packet size2: %d\n", p.size2);
-	printf("packet data: %s\n", p.data);
-	*/
-	/*char* url = get_url_from_packet(&p);
-	printf("url: %s\n", url);
-	char* chainList = get_chainList_from_packet(&p);
-	printf("chainList: %s\n", chainList);
-	* */
-	/*printf("making new packet!\n");
-	int port = pick_ip(&p, ip);
-	printf("port: %d \n ip: %s \n", port, ip);
-	printf("packet size1: %d\n", p.size1);
-	printf("packet size2: %d\n", p.size2);
-	printf("packet data: %s\n", p.data);
-	
-	printf("making new packet!\n");
-	port = pick_ip(&p, ip);
-	printf("port: %d \n ip: %s \n", port, ip);
-	printf("packet size1: %d\n", p.size1);
-	printf("packet size2: %d\n", p.size2);
-	printf("packet data: %s\n", p.data);
-	
-	printf("making new packet!\n");
-	port = pick_ip(&p, ip);
-	printf("port: %d \n ip: %s \n", port, ip);
-	printf("packet size1: %d\n", p.size1);
-	printf("packet size2: %d\n", p.size2);
-	printf("packet data: %s\n", p.data);
-	
-	printf("making new packet!\n");
-	port = pick_ip(&p, ip);
-	printf("port: %d \n ip: %s \n", port, ip);
-	printf("packet size1: %d\n", p.size1);
-	printf("packet size2: %d\n", p.size2);
-	printf("packet data: %s\n", p.data);
-	
-	printf("making new packet!\n");
-	port = pick_ip(&p, ip);
-	printf("port: %d \n ip: %s \n", port, ip);
-	printf("packet size1: %d\n", p.size1);
-	printf("packet size2: %d\n", p.size2);
-	printf("packet data: %s\n", p.data);
-	* */
 	return 0;
 }
