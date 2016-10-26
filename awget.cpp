@@ -26,11 +26,12 @@
 using namespace std;
 
 void read_chainfile(string url, string fileName, packet* to_send){
-  int i = 0;
+  int i = 0; 
   int j = 0;
   string line = "";
   ifstream myfile (fileName); //tries to open the file
   //**load url into struct**//
+  to_send->size1 = url.size();
   for(unsigned int i = 0; i < url.size(); i++){
   to_send->data[j] = url.at(i); //loads url into packet
   j++;
@@ -101,8 +102,9 @@ int main(int argc, char* argv[]){
 	printf("****awget****\n");
 	
 	packet to_send;
-	read_chainfile("www.test.com/index.html", "chain.txt", &to_send);
-	
+	read_chainfile("https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png", "chain.txt", &to_send);
+	printf("size1: %d\n", to_send.size1);
+	printf("size2: %d\n", to_send.size2);
 	printf("data: %s\n", to_send.data);
 	
 	
@@ -134,15 +136,8 @@ int main(int argc, char* argv[]){
 	str >> portno;
 	char* addr = argv[2];
 	sockfd = client_connect(addr, portno);
-	packet test;
-	test.size1 = 2;
-	test.size2 = 100;
-	const char* hello = "hello world\n";
-	//NOTE: the + 1 is necessary to avoid strange characters
-	memcpy(test.data, hello, strlen(hello) + 1);
-	send_msg(sockfd, &test);
-	//send chain-gang to next ss
-	//wait to receive file
+
+	send_msg(sockfd, &to_send);
 
 	FILE* fileptr;
 	fileptr = fopen("newfile.png", "wb"); //create file "newfile" with mode write in bytes

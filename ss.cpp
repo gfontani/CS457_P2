@@ -130,7 +130,7 @@ int getPort(int argc, char *argv[]){
 
 int main(int argc, char* argv[])
 {
-	/*
+
 	if (signal(SIGINT, sig_handler) == SIG_ERR){
 		printf("\ncan't catch SIGINT\n");
 		exit(1);
@@ -155,6 +155,7 @@ int main(int argc, char* argv[])
 	
 	server_accept_listen(portno);//comment out when commenting gabby's code back in
 
+/*
 	//loop?
 	while(true){
 		//listen for connections
@@ -204,7 +205,7 @@ int main(int argc, char* argv[])
 	}
 	//end loop?
 */
-	/*
+
 	
 	packet to_recv;
 	recv_msg(newsockfd, &to_recv);
@@ -217,7 +218,7 @@ int main(int argc, char* argv[])
 	printf("file_send...\n");
 	file_send("Wget.png", newsockfd);
 	printf("file_send complete.\n");
-	*/
+
 	
 	//This was Gabby testing the random ip getter.  leaving it here in case we want it!
 	/*int ipSize = 15;
