@@ -60,14 +60,14 @@ void readAfile(string url, string fileName){
 void file_recv(int sock, FILE* file){
 	packet recvd;
 	recv_msg(sock, &recvd);
-	//TODO create file using individual chunks
 	int total_chunks = recvd.size2;
 	printf("total incoming chunks: %d\n", recvd.size2);
-	printf("chunck_no: %d\n", recvd.size1);
+	int written = fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
+	printf("chunk 0: %dB\n", written);
 	for(int i=1; i<total_chunks; i++){
 		recv_msg(sock, &recvd);
-		//TODO create file using individual chunks
-		printf("chunck_no: %d\n", recvd.size1);		
+		written = fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
+		printf("chunk %d: %dB\n", i, written);
 	}
 }
 
@@ -118,12 +118,20 @@ int main(int argc, char* argv[]){
 	//wait to receive file
 
 	FILE* fileptr;
-	fileptr = fopen("newfile", "wb"); //create file "newfile" with mode write in bytes
+	fileptr = fopen("newfile.png", "wb"); //create file "newfile" with mode write in bytes
+ 	if (fileptr==NULL){
+		printf("unable to open file. exiting.\n");
+		close(sockfd);
+		return 0;
+	}
+
+    
 
 	printf("file_recv...\n");
 	file_recv(sockfd, fileptr);
 	printf("file_recv finished.\n");
-	
+
+	fclose (fileptr);
 	close(sockfd);
 
 
