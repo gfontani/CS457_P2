@@ -88,15 +88,14 @@ void printAddr(char const* port){
 	printf("Waiting for a connection on %s ", ip);
 }
 
-//server setup
-int server_accept_listen(int portno){
+//server listen, returns listening socket fd
+int server_bind_listen(int portno){
+	int sock;
 	char const * port_number = "3360"; //starting port
+	struct sockaddr_in serv_addr;
 
-	socklen_t clilen;
-	struct sockaddr_in serv_addr, cli_addr;
-
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd < 0) error("ERROR opening socket");
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0) error("ERROR opening socket");
 
 	bzero((char *) &serv_addr, sizeof(serv_addr));
 
@@ -106,25 +105,31 @@ int server_accept_listen(int portno){
 	//try 13 ports
 	for(int i=0; i<13; i++){
 		serv_addr.sin_port = htons(portno);
-		if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) == 0)
+		if (bind(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) == 0)
 			break;
 		if(i==12)
 			error("ERROR on binding"); //could not bind to 13 consecutive ports
 		portno++;
 	}
-		
+
+	listen(sock,5);
 	printAddr(port_number);
 	printf("port %d\n", portno);
+	return sock;
+}
 
-	listen(sockfd,5);
+//server setup, returns accepted socket fd
+int server_accept(int sock){
+	struct sockaddr_in cli_addr;
+	socklen_t clilen;
 	clilen = sizeof(cli_addr);
-	newsockfd = accept(sockfd, 
+	int newsock = accept(sock, 
                  (struct sockaddr *) &cli_addr, 
                  &clilen);
-	if (newsockfd < 0) error("ERROR on accept");
+	if (newsock < 0) error("ERROR on accept");
 
 	printf("Found a friend! Waiting to receive...\n");
-	return newsockfd;
+	return newsock;
 }
 
 //get port number from args
@@ -162,13 +167,15 @@ int main(int argc, char* argv[])
 		printf("Exiting help.\n");
 		exit(0);
 	}
+
+	//listen for connections
+	int listen_socket = server_bind_listen(portno);
+
 	while(true){
-		//listen for connections
-		server_accept_listen(portno);
-		
+		int newsock = server_accept(listen_socket);
 		//recv chainfile packet
 		packet chain_packet;
-		recv_msg(newsockfd, &chain_packet);
+		recv_msg(newsock, &chain_packet);
 		cout << "size1: " << chain_packet.size1 << endl;
 		cout << "size2: " << chain_packet.size2 << endl;
 		printf("data: %s",chain_packet.data);
@@ -184,7 +191,7 @@ int main(int argc, char* argv[])
 			wget_url(url);
 			printf("File received\n");
 			printf("Relaying file...\n");
-			file_send(filename, newsockfd);
+			file_send(filename, newsock);
 			printf("file_send complete.\n");
 			//delete the file
 			remove(filename);
@@ -211,7 +218,7 @@ int main(int argc, char* argv[])
 			
 		}
 		//teardown connection
-		close(newsockfd);
+		close(newsock);
 	}
 
 	return 0;

@@ -6,8 +6,8 @@
 #include <common.h>
 
 //global variables
-int sockfd;
-int newsockfd;
+int sockfd; //socket to listen on
+int newsockfd; //connected socket
 
 //get the filename from the URL
 char* get_filename(const char* URL){
