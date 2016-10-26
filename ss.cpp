@@ -6,20 +6,6 @@
 #include <awget.h>
 #include <common.h>
 
-//gets the url from the packet data
-char* get_url_from_packet(packet* parsePacket){
-	char* url = new char[parsePacket->size1 + 1];
-	strncpy(url, parsePacket->data, parsePacket->size1);
-	return url;
-}
-
-//gets the chainlist from the packet data
-char* get_chainList_from_packet(packet* parsePacket){
-	char* chain_list = new char[MAX_CHUNK_SIZE - parsePacket->size1];
-	strncpy(chain_list, parsePacket->data + parsePacket->size1, MAX_CHUNK_SIZE - parsePacket->size1);
-	return chain_list;
-}
-
 //forward file packets from sock1 to sock2 without actually saving file to SS
 void file_forward(int sock1, int sock2){
 	packet to_forward;
@@ -144,6 +130,7 @@ int getPort(int argc, char *argv[]){
 
 int main(int argc, char* argv[])
 {
+	/*
 	if (signal(SIGINT, sig_handler) == SIG_ERR){
 		printf("\ncan't catch SIGINT\n");
 		exit(1);
@@ -167,7 +154,7 @@ int main(int argc, char* argv[])
 	}
 	
 	server_accept_listen(portno);//comment out when commenting gabby's code back in
-/*
+
 	//loop?
 	while(true){
 		//listen for connections
@@ -217,7 +204,7 @@ int main(int argc, char* argv[])
 	}
 	//end loop?
 */
-	
+	/*
 	
 	packet to_recv;
 	recv_msg(newsockfd, &to_recv);
@@ -230,16 +217,60 @@ int main(int argc, char* argv[])
 	printf("file_send...\n");
 	file_send("Wget.png", newsockfd);
 	printf("file_send complete.\n");
-	
-	/*
-	 * This was Gabby testing the random ip getter.  leaving it here in case we want it!
-	char test[] = "1.2.3.4,1111,2.3.4.5,2222,3.4.5.6,3333,4.5.6.7,4444,5.6.7.8,5555";
-	int ipSize = 15;
-	char ip[ipSize];
-	char newList[MAX_CHUNK_SIZE];
-	printf("made all the variables\n");
-	int port = pick_ip(5, test, newList, ip);
-	printf("port: %d \n ip: %s \n newList: %s \n", port, ip, newList);
 	*/
+	
+	//This was Gabby testing the random ip getter.  leaving it here in case we want it!
+	/*int ipSize = 15;
+	char ip[ipSize];
+	
+	char test2[] = "http://www.supercoolurl.com/filename1.2.3.4,1111,2.3.4.5,2222,3.4.5.6,3333,4.5.6.7,4444,5.6.7.8,5555";
+	packet p;
+	p.size1 = 36;
+	p.size2 = 5;
+	memcpy(p.data, test2, MAX_CHUNK_SIZE);
+	printf("packet size1: %d\n", p.size1);
+	printf("packet size2: %d\n", p.size2);
+	printf("packet data: %s\n", p.data);
+	*/
+	/*char* url = get_url_from_packet(&p);
+	printf("url: %s\n", url);
+	char* chainList = get_chainList_from_packet(&p);
+	printf("chainList: %s\n", chainList);
+	* */
+	/*printf("making new packet!\n");
+	int port = pick_ip(&p, ip);
+	printf("port: %d \n ip: %s \n", port, ip);
+	printf("packet size1: %d\n", p.size1);
+	printf("packet size2: %d\n", p.size2);
+	printf("packet data: %s\n", p.data);
+	
+	printf("making new packet!\n");
+	port = pick_ip(&p, ip);
+	printf("port: %d \n ip: %s \n", port, ip);
+	printf("packet size1: %d\n", p.size1);
+	printf("packet size2: %d\n", p.size2);
+	printf("packet data: %s\n", p.data);
+	
+	printf("making new packet!\n");
+	port = pick_ip(&p, ip);
+	printf("port: %d \n ip: %s \n", port, ip);
+	printf("packet size1: %d\n", p.size1);
+	printf("packet size2: %d\n", p.size2);
+	printf("packet data: %s\n", p.data);
+	
+	printf("making new packet!\n");
+	port = pick_ip(&p, ip);
+	printf("port: %d \n ip: %s \n", port, ip);
+	printf("packet size1: %d\n", p.size1);
+	printf("packet size2: %d\n", p.size2);
+	printf("packet data: %s\n", p.data);
+	
+	printf("making new packet!\n");
+	port = pick_ip(&p, ip);
+	printf("port: %d \n ip: %s \n", port, ip);
+	printf("packet size1: %d\n", p.size1);
+	printf("packet size2: %d\n", p.size2);
+	printf("packet data: %s\n", p.data);
+	* */
 	return 0;
 }
