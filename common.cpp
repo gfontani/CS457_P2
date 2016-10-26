@@ -34,17 +34,35 @@ int random_int(int max){
 	return random_value;
 }
 
+//gets the url from the packet data
+char* get_url_from_packet(packet* parsePacket){
+	char* url = new char[parsePacket->size1 + 1];
+	strncpy(url, parsePacket->data, parsePacket->size1);
+	return url;
+}
+
+//gets the chainlist from the packet data
+char* get_chainList_from_packet(packet* parsePacket){
+	char* chain_list = new char[MAX_CHUNK_SIZE - parsePacket->size1];
+	strncpy(chain_list, parsePacket->data + parsePacket->size1, MAX_CHUNK_SIZE - parsePacket->size1);
+	return chain_list;
+}
 
 //picks a random IP from the chain file and removes the ip and 
 //port from the list
-//num_ips is the number of ip addresses left in the list
-//chain_list is the list of ips and ports received from the packet
+//Modifies the packet so that it has the new list and the correct value
+// for size2
+//the_packet: the packet to read from and change
 //ip is a reference to the next ip address.  It will be filled in
-//newList is a reference to the updated ip list. it will be filled in
 //returns: the chosen port
 //
 //NOTE: this function assumes that the list is in the correct format
-int pick_ip(int num_ips, char* chain_list, char* newList, char* ip){
+int pick_ip(packet* the_packet, char* ip){
+	
+	//pick a random IP and remove it from the chain list
+	char* chain_list = get_chainList_from_packet(the_packet);
+	char newList[MAX_CHUNK_SIZE];
+	int num_ips = the_packet->size2;
 	int port = -1;
 	//pick a random number
 	int chosen_ip = random_int(num_ips -1);
@@ -86,6 +104,16 @@ int pick_ip(int num_ips, char* chain_list, char* newList, char* ip){
 			}
 		}
 		counter++;
+	}
+	
+	//put new values into packet
+	the_packet->size2 = the_packet->size2 - 1;
+	if(0 == the_packet->size2){
+		char* url = get_url_from_packet(the_packet);
+		memcpy(the_packet->data, url, strlen(url) + 1);
+	}
+	else{
+		memcpy(the_packet->data + the_packet->size1, newList, strlen(newList) + 1);
 	}
 	return port;
 }
