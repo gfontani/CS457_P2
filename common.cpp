@@ -10,7 +10,7 @@ int sockfd;
 int newsockfd;
 
 //get the filename from the URL
-char* get_filename(char* URL){
+char* get_filename(const char* URL){
 	int index = -1;
 	char c;
 	for(int i=0; i<(int)strlen(URL); i++){
@@ -21,7 +21,7 @@ char* get_filename(char* URL){
 	}
 	if(index > -1 && index<(int)strlen(URL)-1){
 		printf("filename Index: %d", URL[index+1]);
-		return 	&URL[index+1];
+		return 	(char*)&URL[index+1];
 	}
 	else return NULL;
 }

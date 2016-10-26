@@ -75,6 +75,7 @@ void read_chainfile(string url, string fileName, packet* to_send){
   }
   else {
     cout<<"unalble to open file"<<'\n';
+		exit(0);
     
   }
 }
@@ -100,54 +101,67 @@ int main(int argc, char* argv[]){
 	}
 
 	printf("****awget****\n");
-	
+	const char* chain_file;	
 	packet to_send;
-	read_chainfile("https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png", "chain.txt", &to_send);
-	printf("size1: %d\n", to_send.size1);
-	printf("size2: %d\n", to_send.size2);
-	printf("data: %s\n", to_send.data);
-	
-	
-/*	if (argc == 2) {
-		//URL is first argument with no flag
-		printf("no chain file requested, will attempt to read chaingang.txt.\n");
-		//TODO
-		//attempt to read chaingang.txt
+
+	//URL is first argument with no flag, chainfile is chaingang.txt
+	if (argc == 2) {
+		chain_file = "chaingang.txt";
 	}
+
+	//URL is first argument with no flag followed by "-c <chainfile>"
 	else if(argc == 4){
-		//URL is first argument with no flag
-		printf("chain file supplied, will attempt to read.\n");
-		//TODO
-		//attempt to read supplied chain-file
+		if(strcmp(argv[2],"-c")==0){
+			chain_file = argv[3];
+		}
+		else{
+					printf("incorrect flag used: %s, use '-c'\n", argv[2]);
+					exit(0);
+		}
 	}
+	
+	//else print help
 	else{
 		printf("*help*\n");
 		printf("insert helpful words here.\n");
 		printf("Exiting help.\n");
 		exit(0);
 	}
-	*/
 	
-	//TODO
-	//TODO change this!!!
 	
-	int portno;
-	stringstream str(argv[1]);
-	str >> portno;
-	char* addr = argv[2];
-	sockfd = client_connect(addr, portno);
+	
+	printf("URL: %s\nchainfile: %s\n", argv[1], chain_file);
+	
+	printf("using hardcoded URL instead...\n");
+	const char* url = "https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png";
+	//char* url = argv[1];
+	
+	read_chainfile(url, chain_file, &to_send);
+	printf("size1: %d\n", to_send.size1);
+	printf("size2: %d\n", to_send.size2);
+	printf("data: %s\n", to_send.data);
+	
+	
+	char addr[20];
+	int portno = pick_ip(&to_send, addr);
+	printf("attempting to connect to ip: %s\tport: %d\n", addr, portno);
+	
 
+	sockfd = client_connect(addr, portno);
 	send_msg(sockfd, &to_send);
 
 	FILE* fileptr;
-	fileptr = fopen("newfile.png", "wb"); //create file "newfile" with mode write in bytes
+	
+	char* filename = get_filename(url);
+	
+	printf("attempting to open file: %s\n", filename);
+	
+	fileptr = fopen(filename, "wb"); //create file "newfile" with mode write in bytes
  	if (fileptr==NULL){
 		printf("unable to open file. exiting.\n");
 		close(sockfd);
 		return 0;
 	}
-
-    
 
 	printf("file_recv...\n");
 	file_recv(sockfd, fileptr);
@@ -155,7 +169,6 @@ int main(int argc, char* argv[]){
 
 	fclose (fileptr);
 	close(sockfd);
-
 
 	return 0;
 }
