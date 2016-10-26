@@ -6,6 +6,57 @@
 #include <awget.h>
 #include <common.h>
 
+void readAfile(string url, string fileName){
+  int i = 0;
+  int j = 0;
+  string line = "";
+  ifstream myfile (fileName); //tries to open the file
+  //**load url into struct**//
+  for(unsigned int i = 0; i < url.size(); i++){
+  data[j] = url.at(i); //loads url into packet
+  j++;
+  }
+  
+  
+  if(myfile.is_open()) //checks to see if file exists and can be opened.
+  { getline(myfile,line); //grabs first line, number of ss
+    stringstream convert(line);
+    convert>>size2; //convert string to short int.
+    cout<<"size2 " << size2<<endl;
+    while(getline (myfile,line) ){
+      cout<< line<< '\n'; //prints out file contents... 
+      /*need to print out chainFile and next ip at each step
+       * probably need to do this from the struct
+       */
+      for(unsigned int i = 0; i < line.size(); i++){
+        data[j] = line.at(i);
+        if(data[j] == ' '){
+          data[j] = ',';
+        }
+        j++;
+      }
+      data[j] = ',';
+      j++;
+    }
+    //set last index to whatever terminator you want.
+    data[j-1] = 0;
+    myfile.close();
+    cout<<"now for the array\n";
+    
+    /*prints out data[]*/
+    while(data[i] != 0)//this only works if the array is calloced.
+    {
+      cout<<data[i]; 
+      i++;
+    }
+    cout<<'\n';//new line at the end of array printout.
+  }
+  else {
+    cout<<"unalble to open file"<<'\n';
+    
+  }
+}
+
 void file_recv(int sock, FILE* file){
 	packet recvd;
 	recv_msg(sock, &recvd);
