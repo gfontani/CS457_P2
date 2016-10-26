@@ -59,10 +59,19 @@ void file_send(const char* filename, int sockfd){
 //wget file: returns a pointer to the first byte of the file
 void wget_url(const char* URL){
 	int n;
+	
+	//command is executed in this order...
 	const char* command = "wget ";
-	char str[strlen(command) + strlen(URL)];
- 	strcpy(str, command);
-	strcat(str, URL);
+	//URL
+	const char* command_flag = " -O ";
+	char* filename = get_filename(URL);
+	
+	
+	char str[strlen(command) + strlen(URL) +strlen(command_flag) + strlen(filename)];
+ 	strcpy(str, command); //command
+	strcat(str, URL); //URL
+	strcat(str, command_flag); //flag
+	strcat(str, filename); //filename
 	n = system(str); //downloads file to working directory
 	if(n<0)
 		error("ERROR using wget");

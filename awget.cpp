@@ -25,11 +25,11 @@
 
 using namespace std;
 
-void read_chainfile(string url, string fileName, packet* to_send){
+void read_chainfile(string url, const char* fileName, packet* to_send){
   int i = 0; 
   int j = 0;
   string line = "";
-  ifstream myfile (fileName); //tries to open the file
+  ifstream myfile(fileName); //tries to open the file
   //**load url into struct**//
   to_send->size1 = url.size();
   for(unsigned int i = 0; i < url.size(); i++){
