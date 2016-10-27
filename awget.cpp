@@ -60,6 +60,7 @@ void read_chainfile(string url, const char* fileName, packet* to_send){
       to_send->data[j] = ',';
       j++;
     }
+    j--;
     //set last index to whatever terminator you want.
     to_send->data[j-1] = '\0';
     myfile.close();
@@ -71,6 +72,7 @@ void read_chainfile(string url, const char* fileName, packet* to_send){
       cout<<to_send->data[i]; 
       i++;
     }
+    cout<<endl;
     cout<<"finished printing\n";//new line at the end of array printout.
   }
   else {
@@ -123,7 +125,11 @@ int main(int argc, char* argv[]){
 	//else print help
 	else{
 		printf("*help*\n");
-		printf("insert helpful words here.\n");
+		printf("awget takes up to two command arguments\n");
+                printf("./awget <url> [-c chainfile]\n");
+                printf("or just ./awget<url>\n");
+                printf("if no chainfile is specified, program will\n");
+                printf("look for a local file called chaingang.txt\n");
 		printf("Exiting help.\n");
 		exit(0);
 	}
