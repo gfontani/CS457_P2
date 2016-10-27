@@ -169,17 +169,16 @@ int main(int argc, char* argv[])
 	}
 
 	//listen for connections
-	int listen_socket = server_bind_listen(portno);
+	sockfd = server_bind_listen(portno);
 
 	while(true){
-		int newsock = server_accept(listen_socket);
+
+		printf("blocking to accept connection...\n");
+		int newsock = server_accept(sockfd);
 		//recv chainfile packet
 		packet chain_packet;
 		recv_msg(newsock, &chain_packet);
-		cout << "size1: " << chain_packet.size1 << endl;
-		cout << "size2: " << chain_packet.size2 << endl;
-		printf("data: %s",chain_packet.data);
-		printf("data2: %s", chain_packet.data + chain_packet.size1);
+
 		char* url = get_url_from_packet(&chain_packet);
 		printf("Request: %s\n", url);
 		//if chainlist empty 
@@ -211,7 +210,7 @@ int main(int argc, char* argv[])
 			
 			//forward the file
 			printf("waiting for file...\n");
-			file_forward(forwardingSocket, newsockfd);
+			file_forward(forwardingSocket, newsock);
 			printf("Finished relaying file. Goodbye!\n");
 			//teardown connection
 			close(forwardingSocket);

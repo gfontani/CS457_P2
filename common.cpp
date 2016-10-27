@@ -203,8 +203,8 @@ int client_connect(char* addr, int portno){
 
 	printf("Connecting to server... ");
 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd < 0) error("ERROR opening socket");
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock < 0) error("ERROR opening socket");
 
 	server = gethostbyname(addr);
 	if (server == NULL) {
@@ -215,12 +215,12 @@ int client_connect(char* addr, int portno){
 	serv_addr.sin_family = AF_INET;
     bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
 	serv_addr.sin_port = htons(portno);
-	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
+	if (connect(sock,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
 		error("ERROR connecting");
 
 	printf("Connected!\n");
 	printf("Connected to a friend! Sending...\n");
-	return sockfd;
+	return sock;
 }
 
 void send_msg(int sock, packet* to_send){
