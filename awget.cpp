@@ -141,8 +141,12 @@ int main(int argc, char* argv[]){
 	printf("Request: %s\nchainfile: %s\n", argv[1], chain_file);
 	
 	printf("using hardcoded URL instead...\n");
-	const char* url = "https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png";
-	//char* url = argv[1];
+
+	//sample URL with image:
+	//const char* url = "https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png";
+
+	//use argument for url
+	char* url = argv[1];
 	
 	read_chainfile(url, chain_file, &to_send);
 	printf("size1: %d\n", to_send.size1);

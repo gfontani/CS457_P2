@@ -19,10 +19,9 @@ char* get_filename(const char* URL){
 		}	
 	}
 	if(index > -1 && index<(int)strlen(URL)-1){
-		printf("filename Index: %d", URL[index+1]);
 		return 	(char*)&URL[index+1];
 	}
-	else return NULL;
+	else return (char*)"index.html";
 }
 
 //returns a random number between (inclusive) 0 and max
@@ -228,12 +227,4 @@ void send_msg(int sock, packet* to_send){
 void recv_msg(int sock, packet* recvd){
 	int n = recv(sock,reinterpret_cast<char*>(recvd),sizeof(packet), MSG_WAITALL);
 	if (n < 0) error("ERROR reading from socket");
-	/*short* header = (short*)buffer;
-	char* begin = buffer;
-	recvd.size1 = header[0];
-	cout << recvd.size1 << endl;
-	recvd.size2 = header[1];
-	cout << recvd.size1 << endl;
-	recvd.data = begin+4;
-	*/
 }
