@@ -30,7 +30,6 @@ using std::cin;
 
 //global variables
 extern int sockfd;
-extern int newsockfd;
 
 //function declarations: common functions needed for both awget and ss
 void check_number(char* str);

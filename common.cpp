@@ -5,9 +5,8 @@
 
 #include <common.h>
 
-//global variables
+//global variable
 int sockfd; //socket to listen on
-int newsockfd; //connected socket
 
 //get the filename from the URL
 char* get_filename(const char* URL){
@@ -174,13 +173,11 @@ void check_address(char* address){
 void sig_handler(int signo){
 	if (signo == SIGINT){
 		printf("\nreceived SIGINT, exiting gracefully\n");
-		close(newsockfd);
 		close(sockfd);
 		exit(0);
 	}
 	else{
 		printf("\nunhandled signo, attempting to exit gracefully\n");
-		close(newsockfd);
 		close(sockfd);
 		exit(-1);
 	}
@@ -190,7 +187,6 @@ void sig_handler(int signo){
 void error(char const * msg)
 {
 	perror(msg);
-	close(newsockfd);
 	close(sockfd);
 	exit(1);
 }
