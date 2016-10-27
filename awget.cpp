@@ -48,21 +48,23 @@ void read_chainfile(string url, const char* fileName, packet* to_send){
     while(getline (myfile,line) ){
       cout<< line<< '\n'; //prints out file contents... 
       /*need to print out chainFile and next ip at each step
-       * probably need to do this from the struct
+       * of the ss
        */
       for(unsigned int i = 0; i < line.size(); i++){
         to_send->data[j] = line.at(i);
+        //replace spaces with a ','
         if(to_send->data[j] == ' '){
           to_send->data[j] = ',';
         }
         j++;
       }
+      //adds a comma to split the two lines
       to_send->data[j] = ',';
       j++;
     }
     j--;
     //set last index to whatever terminator you want.
-    to_send->data[j-1] = '\0';
+    to_send->data[j] = '\0';
     myfile.close();
     cout<<"now for the array\n";
     
@@ -117,7 +119,7 @@ int main(int argc, char* argv[]){
 			chain_file = argv[3];
 		}
 		else{
-					printf("incorrect flag used: %s, use '-c'\n", argv[2]);
+                    printf("incorrect flag used: %s, use '-c'\n", argv[2]);
 					exit(0);
 		}
 	}
@@ -136,7 +138,7 @@ int main(int argc, char* argv[]){
 	
 	
 	
-	printf("URL: %s\nchainfile: %s\n", argv[1], chain_file);
+	printf("Request: %s\nchainfile: %s\n", argv[1], chain_file);
 	
 	printf("using hardcoded URL instead...\n");
 	const char* url = "https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png";

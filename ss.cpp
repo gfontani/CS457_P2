@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 			remove(filename);
 		}
 		else{
-			printf("chainlist is: cool stuff");//TODO: replace this with Ben's method
+			printf("chainlist is: cool stuff\n");//TODO: replace this with Ben's method
 			//make new chainfile packet
 			char ip[20];
 			int port = pick_ip(&chain_packet, ip);
