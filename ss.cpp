@@ -168,57 +168,70 @@ int main(int argc, char* argv[])
 		exit(0);
 	}
 
-	//listen for connections
+	//bind to port and listen for connections
 	sockfd = server_bind_listen(portno);
 
-	while(true){
-
-		printf("blocking to accept connection...\n");
+	while(1){
+		//parent thread blocks and waits for a new connection
 		int newsock = server_accept(sockfd);
-		//recv chainfile packet
-		packet chain_packet;
-		recv_msg(newsock, &chain_packet);
 
-		char* url = get_url_from_packet(&chain_packet);
-		printf("Request: %s\n", url);
-		//if chainlist empty 
-		if(0 == chain_packet.size2){
-			char* filename = get_filename(url);
-			printf("chainlist is empty\n");
-			//get and send file
-			printf("issueing wget for file <%s>\n", filename);
-			wget_url(url);
-			printf("File received\n");
-			printf("Relaying file...\n");
-			file_send(filename, newsock);
-			printf("file_send complete.\n");
-			//delete the file
-			remove(filename);
-		}
-		else{
-			printf("chainlist is: cool stuff\n");//TODO: replace this with Ben's method
-			//make new chainfile packet
-			char ip[20];
-			int port = pick_ip(&chain_packet, ip);
-			printf("next SS is %s, %d\n", ip, port);
+		//once connection is established, fork a child
+		int pid = fork();
+
+		//child does cool stuff
+		if(pid==0){	
+			//recv chainfile packet
+			packet chain_packet;
+			recv_msg(newsock, &chain_packet);
+
+			char* url = get_url_from_packet(&chain_packet);
+			printf("Request: %s\n", url);
+			//if chainlist empty 
+			if(0 == chain_packet.size2){
+				char* filename = get_filename(url);
+				printf("chainlist is empty\n");
+				//get and send file
+				printf("issueing wget for file <%s>\n", filename);
+				wget_url(url);
+					printf("File received\n");
+				printf("Relaying file...\n");
+				file_send(filename, newsock);
+				printf("file_send complete.\n");
+				//delete the file
+				remove(filename);
+			}
+			else{
+				printf("chainlist is: cool stuff\n");//TODO: replace this with Ben's method
+				//make new chainfile packet
+				char ip[20];
+				int port = pick_ip(&chain_packet, ip);
+				printf("next SS is %s, %d\n", ip, port);
 			
-			//make new socket
-			int forwardingSocket = client_connect(ip, port);
+				//make new socket
+				int forwardingSocket = client_connect(ip, port);
 			
-			//send new chainfile packet
-			send_msg(forwardingSocket, &chain_packet);
+				//send new chainfile packet
+				send_msg(forwardingSocket, &chain_packet);
 			
-			//forward the file
-			printf("waiting for file...\n");
-			file_forward(forwardingSocket, newsock);
-			printf("Finished relaying file. Goodbye!\n");
+				//forward the file
+				printf("waiting for file...\n");
+				file_forward(forwardingSocket, newsock);
+				printf("Finished relaying file. Goodbye!\n");
+				//teardown connection
+				close(forwardingSocket);
+			
+			}
 			//teardown connection
-			close(forwardingSocket);
-			
+			close(newsock);
+			return 0;
 		}
-		//teardown connection
-		close(newsock);
+		else if(pid<0){
+			// fork failed
+			printf("fork() failed!\n");
+			close(sockfd);
+			close(newsock);
+			return 1;
+		}
 	}
-
 	return 0;
 }
