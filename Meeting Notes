@@ -7,6 +7,10 @@ Awget.h   ----------------------------------awget.cpp
                                  -wget filed
                                  -usage
 
+Some questions:  Are we handling giving a port number to stepping stone?
+                 I think we need to be putting a comma between ip address and port?
+                 Do we need to error check ip address and port numbers?
+
 
 Things to do:
 make sure to call check address when reading the ip file to make sure you have valid IP's.
