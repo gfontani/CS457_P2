@@ -12,7 +12,14 @@ int sockfd; //socket to listen on
 char* get_filename(const char* URL){
 	int index = -1;
 	char c;
-	for(int i=0; i<(int)strlen(URL); i++){
+	int start = 0;
+	char* beginning = new char[20];
+	strncpy(beginning, URL, 7);
+	//cout << beginning << endl;
+	if(strcmp("http://",beginning) == 0){
+		start = 7;
+	}
+	for(int i=start; i<(int)strlen(URL); i++){
 		c = URL[i];
 		if(c=='/'){
 			index = i; 

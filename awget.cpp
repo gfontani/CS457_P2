@@ -178,7 +178,7 @@ int main(int argc, char* argv[]){
 		return 0;
 	}
 
-	printf("file_recv...\n");
+	//printf("file_recv...\n");
 	file_recv(sockfd, fileptr);
 	printf("Received file: %s\n", filename);
 

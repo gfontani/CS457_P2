@@ -162,7 +162,7 @@ void main_ss(int newsock){
 			char* filename = get_filename(url);
 			printf("chainlist is empty\n");
 			//get and send file
-			printf("issueing wget for file <%s>\n", filename);
+			printf("issueing wget for file %s\n", filename);
 			wget_url(url);
 			printf("File received\n");
 			printf("Relaying file...\n");
