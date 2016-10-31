@@ -46,11 +46,10 @@ void read_chainfile(string url, const char* fileName, packet* to_send){
     //cout<<"size2 " << chain_len<<endl;
     to_send->size2 = chain_len;
     while(getline (myfile,line) ){
-      cout<< line<< '\n'; //prints out file contents... 
+      //cout<< line<< '\n'; //prints out file contents... 
       /*need to print out chainFile and next ip at each step
        * of the ss
        */
-	//TODO: do we want to use Ben's method here instead?
       for(unsigned int i = 0; i < line.size(); i++){
         to_send->data[j] = line.at(i);
         //replace spaces with a ','
@@ -90,11 +89,11 @@ void file_recv(int sock, FILE* file){
 	recv_msg(sock, &recvd);
 	int total_chunks = recvd.size2;
 	//printf("total incoming chunks: %d\n", recvd.size2);
-	int written = fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
+	fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
 	//printf("chunk 0: %dB\n", written);
 	for(int i=1; i<total_chunks; i++){
 		recv_msg(sock, &recvd);
-		written = fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
+		fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
 		//printf("chunk %d: %dB\n", i, written);
 	}
 }
@@ -150,13 +149,16 @@ int main(int argc, char* argv[]){
 	char* url = argv[1];
 	
 	read_chainfile(url, chain_file, &to_send);
+	print_chainfile(get_chainList_from_packet(&to_send));
 	//printf("size1: %d\n", to_send.size1);
 	//printf("size2: %d\n", to_send.size2);
 	//printf("data: %s\n", to_send.data);
-	
+
 	
 	char addr[20];
 	int portno = pick_ip(&to_send, addr);
+	printf("next SS is %s, %d\n", addr, portno);
+
 	//printf("attempting to connect to ip: %s\tport: %d\n", addr, portno);
 	printf("waiting for file...\n");
 
@@ -182,6 +184,7 @@ int main(int argc, char* argv[]){
 
 	fclose (fileptr);
 	close(sockfd);
+	printf("Goodbye!\n");
 
 	return 0;
 }

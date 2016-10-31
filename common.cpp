@@ -28,7 +28,7 @@ char* get_filename(const char* URL){
 int random_int(int max){
 	srand (time(NULL));
 	int random_value = rand() % (max+1);
-	printf("random value chosen: %d", random_value);
+	//printf("random value chosen: %d", random_value);
 	return random_value;
 }
 
@@ -54,7 +54,7 @@ void print_chainfile(char* chain_list){
 	printf("chainlist is: \n");
 	
 	while(split != NULL){
-		//prnit ip
+		//print ip
 		printf("%s, ", split);
 		split = strtok(NULL, ","); 
 		//print port
@@ -82,7 +82,7 @@ int pick_ip(packet* the_packet, char* ip){
 	int port = -1;
 	//pick a random number
 	int chosen_ip = random_int(num_ips -1);
-	printf("random int: %d\n", chosen_ip);
+	//printf("random int: %d\n", chosen_ip);
 	
 	//split all of the IPs
 	//get the chosen ip and port
@@ -189,7 +189,7 @@ void check_address(char* address){
 //signal handler for SIGINT
 void sig_handler(int signo){
 	if (signo == SIGINT){
-		printf("\nreceived SIGINT, exiting gracefully\n");
+		printf("Goodbye!\n");
 		close(sockfd);
 		exit(0);
 	}
@@ -214,7 +214,7 @@ int client_connect(char* addr, int portno){
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 
-	printf("Connecting to server... ");
+	//printf("Connecting to server... ");
 
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0) error("ERROR opening socket");
@@ -231,8 +231,8 @@ int client_connect(char* addr, int portno){
 	if (connect(sock,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
 		error("ERROR connecting");
 
-	printf("Connected!\n");
-	printf("Connected to a friend! Sending...\n");
+	//printf("Connected!\n");
+	//printf("Connected to a friend! Sending...\n");
 	return sock;
 }
 

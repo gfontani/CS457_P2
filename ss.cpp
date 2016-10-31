@@ -36,7 +36,7 @@ void file_send(const char* filename, int sockfd){
 	int total_chunks = filelen/MAX_CHUNK_SIZE + 1;
 	//printf("total_packets: %d\n", total_chunks);
 
-	//remove(filename);
+	remove(filename);
 
 	packet to_send;
 	long remaining = filelen;
@@ -133,7 +133,7 @@ int server_accept(int sock){
                  &clilen);
 	if (newsock < 0) error("ERROR on accept");
 
-	printf("Found a friend! Waiting to receive...\n");
+	//printf("Found a friend! Waiting to receive...\n");
 	return newsock;
 }
 
