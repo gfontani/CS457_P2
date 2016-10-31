@@ -1,4 +1,4 @@
- CXXFLAGS=-Wall -g -I.
+ CXXFLAGS=-Wall -g -I. -pthread
 all: awget ss
 
 awget: awget.o common.o
