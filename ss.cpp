@@ -12,12 +12,12 @@ void file_forward(int sock1, int sock2){
 	packet to_forward;
 	recv_msg(sock1, &to_forward);
 	int total_chunks = to_forward.size2;
-	printf("total incoming chunks: %d\n", total_chunks);
-	printf("chunk_no: 1, size: %d...\n", to_forward.size1);
+	//printf("total incoming chunks: %d\n", total_chunks);
+	//printf("chunk_no: 1, size: %d...\n", to_forward.size1);
 	send_msg(sock2, &to_forward);
 	for(int i=1; i<total_chunks; i++){
 		recv_msg(sock1, &to_forward);
-		printf("chunk_no: %d, size: %d...\n", i, to_forward.size1);
+	//	printf("chunk_no: %d, size: %d...\n", i, to_forward.size1);
 		send_msg(sock2, &to_forward);
 	}
 }
@@ -34,7 +34,9 @@ void file_send(const char* filename, int sockfd){
 	rewind(fileptr);
 
 	int total_chunks = filelen/MAX_CHUNK_SIZE + 1;
-	printf("total_packets: %d\n", total_chunks);
+	//printf("total_packets: %d\n", total_chunks);
+
+	//remove(filename);
 
 	packet to_send;
 	long remaining = filelen;
@@ -54,6 +56,9 @@ void file_send(const char* filename, int sockfd){
 		}
 		send_msg(sockfd, &to_send);
 	}
+	
+
+
 }
 
 //wget file: returns a pointer to the first byte of the file
@@ -193,18 +198,18 @@ int main(int argc, char* argv[])
 				//get and send file
 				printf("issueing wget for file <%s>\n", filename);
 				wget_url(url);
-					printf("File received\n");
+				printf("File received\n");
 				printf("Relaying file...\n");
 				file_send(filename, newsock);
-				printf("file_send complete.\n");
-				//delete the file
-				remove(filename);
+				printf("Finished relaying file. Goodbye!\n");
 			}
 			else{
-				printf("chainlist is: cool stuff\n");//TODO: replace this with Ben's method
+				//print chainlist
+				print_chainfile(get_chainList_from_packet(&chain_packet));
 				//make new chainfile packet
 				char ip[20];
 				int port = pick_ip(&chain_packet, ip);
+				//print next stepping stone
 				printf("next SS is %s, %d\n", ip, port);
 			
 				//make new socket

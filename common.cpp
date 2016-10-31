@@ -46,6 +46,24 @@ char* get_chainList_from_packet(packet* parsePacket){
 	return chain_list;
 }
 
+void print_chainfile(char* chain_list){
+	//split all of the IPs
+	//get the chosen ip and port
+	//put the rest in the newList
+	char* split = strtok(chain_list, ",");
+	printf("chainlist is: \n");
+	
+	while(split != NULL){
+		//prnit ip
+		printf("%s, ", split);
+		split = strtok(NULL, ","); 
+		//print port
+		printf("%s\n", split);
+		split = strtok(NULL, ",");
+	}
+	
+}
+
 //picks a random IP from the chain file and removes the ip and 
 //port from the list
 //Modifies the packet so that it has the new list and the correct value

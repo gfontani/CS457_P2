@@ -45,5 +45,7 @@ char* get_filename(const char* URL);
 char* get_url_from_packet(packet* parsePacket);
 char* get_chainList_from_packet(packet* parsePacket);
 int pick_ip(packet* the_packet, char* ip);
+void print_chainfile(char* chan_list);
+
 
 #endif

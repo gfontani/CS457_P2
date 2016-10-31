@@ -43,13 +43,14 @@ void read_chainfile(string url, const char* fileName, packet* to_send){
     stringstream convert(line);
 	short chain_len = -1;
     convert>>chain_len; //convert string to short int.
-    cout<<"size2 " << chain_len<<endl;
+    //cout<<"size2 " << chain_len<<endl;
     to_send->size2 = chain_len;
     while(getline (myfile,line) ){
       cout<< line<< '\n'; //prints out file contents... 
       /*need to print out chainFile and next ip at each step
        * of the ss
        */
+	//TODO: do we want to use Ben's method here instead?
       for(unsigned int i = 0; i < line.size(); i++){
         to_send->data[j] = line.at(i);
         //replace spaces with a ','
@@ -66,19 +67,19 @@ void read_chainfile(string url, const char* fileName, packet* to_send){
     //set last index to whatever terminator you want.
     to_send->data[j] = '\0';
     myfile.close();
-    cout<<"now for the array\n";
+    //cout<<"now for the array\n";
     
     /*prints out data[]*/
     while(to_send->data[i] != '\0')//this only works if the array is calloced.
     {
-      cout<<to_send->data[i]; 
+      //cout<<to_send->data[i]; 
       i++;
     }
     cout<<endl;
-    cout<<"finished printing\n";//new line at the end of array printout.
+    //cout<<"finished printing\n";//new line at the end of array printout.
   }
   else {
-    cout<<"unalble to open file"<<'\n';
+    printf("unable to open file: %s: ", fileName);
 		exit(0);
     
   }
@@ -88,13 +89,13 @@ void file_recv(int sock, FILE* file){
 	packet recvd;
 	recv_msg(sock, &recvd);
 	int total_chunks = recvd.size2;
-	printf("total incoming chunks: %d\n", recvd.size2);
+	//printf("total incoming chunks: %d\n", recvd.size2);
 	int written = fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
-	printf("chunk 0: %dB\n", written);
+	//printf("chunk 0: %dB\n", written);
 	for(int i=1; i<total_chunks; i++){
 		recv_msg(sock, &recvd);
 		written = fwrite((void*) &recvd.data[0], 1, recvd.size1, file);
-		printf("chunk %d: %dB\n", i, written);
+		//printf("chunk %d: %dB\n", i, written);
 	}
 }
 
@@ -140,7 +141,7 @@ int main(int argc, char* argv[]){
 	
 	printf("Request: %s\nchainfile: %s\n", argv[1], chain_file);
 	
-	printf("using hardcoded URL instead...\n");
+	//printf("using hardcoded URL instead...\n");
 
 	//sample URL with image:
 	//const char* url = "https://upload.wikimedia.org/wikipedia/en/c/cb/Wget.png";
@@ -149,15 +150,15 @@ int main(int argc, char* argv[]){
 	char* url = argv[1];
 	
 	read_chainfile(url, chain_file, &to_send);
-	printf("size1: %d\n", to_send.size1);
-	printf("size2: %d\n", to_send.size2);
-	printf("data: %s\n", to_send.data);
+	//printf("size1: %d\n", to_send.size1);
+	//printf("size2: %d\n", to_send.size2);
+	//printf("data: %s\n", to_send.data);
 	
 	
 	char addr[20];
 	int portno = pick_ip(&to_send, addr);
-	printf("attempting to connect to ip: %s\tport: %d\n", addr, portno);
-	
+	//printf("attempting to connect to ip: %s\tport: %d\n", addr, portno);
+	printf("waiting for file...\n");
 
 	sockfd = client_connect(addr, portno);
 	send_msg(sockfd, &to_send);
@@ -166,7 +167,7 @@ int main(int argc, char* argv[]){
 	
 	char* filename = get_filename(url);
 	
-	printf("attempting to open file: %s\n", filename);
+	//printf("attempting to open file: %s\n", filename);
 	
 	fileptr = fopen(filename, "wb"); //create file "newfile" with mode write in bytes
  	if (fileptr==NULL){
@@ -177,7 +178,7 @@ int main(int argc, char* argv[]){
 
 	printf("file_recv...\n");
 	file_recv(sockfd, fileptr);
-	printf("file_recv finished.\n");
+	printf("Received file: %s\n", filename);
 
 	fclose (fileptr);
 	close(sockfd);
